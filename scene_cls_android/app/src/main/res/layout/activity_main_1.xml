@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+    <LinearLayout
+        android:id="@+id/btn_select1"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:orientation="vertical">
+
+
+        <ImageView
+            android:id="@+id/iv_pic"
+            android:layout_width="401dp"
+            android:layout_height="120dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="85dp"
+            android:background="@color/colorLineGray"
+            android:onClick="onPicSelect"
+            android:tooltipText="选择照片" />
+
+
+        <ImageView
+            android:id="@+id/iv_video"
+            android:layout_width="401dp"
+            android:layout_height="120dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="85dp"
+            android:background="@color/colorLineGray"
+            android:onClick="onVideoSelect"
+            android:tooltipText="选择视频" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/btn_select"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="125dp"
+        android:orientation="vertical">
+
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:onClick="onPicDeal"
+            android:padding="10dp"
+            android:text="开始处理" />
+
+        <TextView
+            android:id="@+id/result_text"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:hint="预测结果会在这里显示"
+            android:inputType="textMultiLine"
+            android:textSize="16sp"
+            tools:ignore="TextViewEdits" />
+
+
+    </LinearLayout>
+
+</RelativeLayout>
