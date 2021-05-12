@@ -1,3 +1,6 @@
 [submodule "third_party/DeepvacSB"]
 	path = third_party/DeepvacSB
 	url = https://github.com/DeepVAC/DeepvacSB
+[submodule "third_party/ncnn-mobile"]
+	path = third_party/ncnn-mobile
+	url = https://github.com/DeepVAC/ncnn-mobile
