@@ -1,0 +1,83 @@
+airplane && airport && station
+airplane && airport && station
+airplane && airport && station
+amusement_park
+sports && fitness
+others
+others
+others
+sports && fitness
+sports && fitness
+sports && fitness
+sports && fitness
+sports && fitness
+sports && fitness
+sports && fitness
+sports && fitness
+sports && fitness
+sports && fitness
+sports && fitness
+sports && fitness
+sports && fitness
+traval
+others
+others
+traval
+others
+others
+traval
+traval
+traval
+traval
+traval
+traval
+dinner && coffee
+dinner && coffee
+dinner && coffee
+traval
+others
+bar && ballroom
+office && meeting
+office && meeting
+others
+airplane && airport && station
+traval
+others
+others
+others
+others
+others
+others
+others
+library && classroom
+library && classroom
+traval
+others
+others
+others
+others
+bar && ballroom
+bar && ballroom
+traval
+traval
+traval
+traval
+traval
+traval
+others
+traval
+traval
+traval
+dinner && coffee
+others
+traval
+airplane && airport && station
+traval
+baby && human
+others
+others
+others
+others
+baby && human
+pet
+dinner && coffee

@@ -11,7 +11,7 @@ import java.lang.ref.SoftReference;
 
 import androidx.appcompat.widget.AppCompatImageView;
 
-import com.sbu.scenecls.R;
+import com.sbu.demo.R;
 
 
 //public class LoadingView extends ImageView {

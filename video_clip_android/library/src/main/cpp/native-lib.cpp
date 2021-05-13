@@ -6,6 +6,12 @@
 #include "util.h"
 #include "deepvac_sb.h"
 
+#include <android/log.h>
+#define  LOG_TAG    "Test"
+#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#include <chrono>
+
+double g_trueAITime = 0;
 
 std::shared_ptr<DeepvacSB> video_clip;
 int g_width;
@@ -47,7 +53,11 @@ Java_com_sbd_library_ShotSegmention_cacheFeatureFromNV21(JNIEnv *env, jobject th
     unsigned char *ybase = pBuf;
     unsigned char *vubase = &pBuf[width * height];
     libyuv::NV21ToRGB24(ybase, width, vubase, width, bgr_data, width*3, width, height);
+    auto start = std::chrono::system_clock::now();
     video_clip->cacheFeatureFromHwcBgrFrame(bgr_data, width, height);
+    auto end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    g_trueAITime += elapsed_seconds.count();
 }
 
 
@@ -61,6 +71,10 @@ Java_com_sbd_library_ShotSegmention_getSbIdx(JNIEnv *env, jobject thiz) {
     for(int i = 0; i < length; ++i) {
         arr[i] = indexes[i];
     }
+
+    __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "%f", g_trueAITime);
+    g_trueAITime = 0;
+
     env->SetIntArrayRegion(jarr, 0, length, arr);
     return jarr;
 }

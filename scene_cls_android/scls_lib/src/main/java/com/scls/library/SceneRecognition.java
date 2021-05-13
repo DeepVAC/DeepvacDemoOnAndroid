@@ -166,7 +166,7 @@ public class SceneRecognition {
             return vec;
         }
 
-        return inferenceVideoInternal_fast(path, cutStartMs, cutEndMs, useKeyFrame);
+        return inferenceVideoInternal_faster(path, cutStartMs, cutEndMs, useKeyFrame);
     }
 
 
@@ -464,6 +464,221 @@ public class SceneRecognition {
 
         return res_str;
     }
+
+    //逻辑改变，不进行镜头分割操作，查找到第一个关键帧，然后进行2秒场景识别（只检测6帧）
+    private Vector inferenceVideoInternal_faster(String videoPath, long cutStartMs, long cutEndMs, boolean useKeyFrame) {
+        Vector vec = new Vector();
+        int frameRate = 0;
+
+        long startTime = System.currentTimeMillis();
+
+        MediaExtractor extractor;
+        MediaFormat mediaFormat;
+        String mime;
+        int width;
+        int height;
+
+        try {
+            extractor = new MediaExtractor();
+            extractor.setDataSource(videoPath);
+            int trackIndex = selectTrack(extractor);
+            if (trackIndex < 0) {
+                vec.add("unsupport video");
+                return vec;
+            }
+
+            extractor.selectTrack(trackIndex);
+            mediaFormat = extractor.getTrackFormat(trackIndex);
+            width = mediaFormat.getInteger(MediaFormat.KEY_WIDTH);
+            height = mediaFormat.getInteger(MediaFormat.KEY_HEIGHT);
+            mime = mediaFormat.getString(MediaFormat.KEY_MIME);
+            boolean validSize = checkImgSizeValid(width, height);
+            if(!validSize) {
+                vec.add("unsupport video resolution ratio");
+                return vec;
+            }
+
+            if(mediaFormat.containsKey(MediaFormat.KEY_FRAME_RATE)) {
+                frameRate = mediaFormat.getInteger(MediaFormat.KEY_FRAME_RATE);
+            } else {
+                frameRate = 25;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            vec.add("parse video error");
+            return vec;
+        }
+
+        MediaCodec decoder;
+        try{
+            decoder = MediaCodec.createDecoderByType(mime);
+        } catch(IOException e) {
+            return new Vector();
+        }
+        MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
+
+        decoder.configure(mediaFormat, null, null, 0);
+        decoder.start();
+
+        long duration = Long.MAX_VALUE;
+        if(mediaFormat.containsKey(MediaFormat.KEY_DURATION)){
+            duration = mediaFormat.getLong(MediaFormat.KEY_DURATION);
+        }
+        if(cutStartMs>=0){
+            extractor.seekTo(cutStartMs*1000, MediaExtractor.SEEK_TO_NEXT_SYNC);
+        } else {
+            extractor.seekTo(0, MediaExtractor.SEEK_TO_NEXT_SYNC);
+        }
+        long firstTimeUs = cutStartMs * 1000;
+        long lastTimeUs = cutEndMs*1000;
+        if(lastTimeUs<=firstTimeUs || lastTimeUs > duration) {
+            lastTimeUs = duration + 200;
+        }
+
+        int noDecodeInputBufferCnt = 0;
+        int noDecodeOutputBufferCnt = 0;
+        int maxLossCnt = 1000;
+
+        boolean sawInputEOS = false;
+        boolean sawOutputEOS = false;
+
+        long testclstime = System.currentTimeMillis();
+
+        long infertime = 0;
+        long dequeueInputBufferTime = 0;
+        int dequeueInputBufferCount = 0;
+
+        long queueInputBufferTime = 0;
+        int queueInputBufferCount = 0;
+
+        long dequeueOutputBufferTime = 0;
+        int dequeueOutputBufferCount = 0;
+
+        long getOutputImageTime = 0;
+        int getOutputImageCount = 0;
+
+        float duration_s = lastTimeUs / 1000.f / 1000.f;
+        int frameCount = (int)(duration_s * frameRate);
+
+        int needCheckFrameCount = 6;
+        int jump = (int)(frameRate / 3);
+
+        Vector sceneIndexTemp = new Vector();
+        Vector scoreTmp = new Vector();
+        int frame_index = 0;
+        int counter = 0;
+        int calltime = 0;
+        while (!sawOutputEOS) {
+            ++calltime;
+
+            if (!sawInputEOS) {
+                long dequeueInputBufferStart = System.currentTimeMillis();
+                int inputBufferId = decoder.dequeueInputBuffer(10000);
+                dequeueInputBufferTime += (System.currentTimeMillis() -  dequeueInputBufferStart);
+                dequeueInputBufferCount += 1;
+
+                if (inputBufferId >= 0) {                    noDecodeInputBufferCnt = 0;
+                    ByteBuffer inputBuffer = decoder.getInputBuffer(inputBufferId);
+                    int sampleSize = extractor.readSampleData(inputBuffer, 0);
+                    long presentationTimeUs = extractor.getSampleTime();
+                    //Log.e("Test","extractor presentationTimeUs:"+presentationTimeUs);
+                    if (sampleSize < 0) {
+                        long queueInputBufferStart = System.currentTimeMillis();
+                        decoder.queueInputBuffer(inputBufferId, 0, 0, 0L, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+                        queueInputBufferTime += (System.currentTimeMillis() - queueInputBufferStart);
+                        queueInputBufferCount += 1;
+                        sawInputEOS = true;
+                    } else {
+                        long queueInputBufferStart = System.currentTimeMillis();
+                        decoder.queueInputBuffer(inputBufferId, 0, sampleSize, presentationTimeUs, 0);
+                        extractor.advance();
+                        queueInputBufferTime += (System.currentTimeMillis() - queueInputBufferStart);
+                        queueInputBufferCount += 1;
+                    }
+                }else{
+                    noDecodeInputBufferCnt++;
+                    if(noDecodeInputBufferCnt > maxLossCnt){
+                        sawInputEOS = true;
+                    }
+                }
+            }
+
+            long dequeueOutputBufferStart = System.currentTimeMillis();
+            int outputBufferId = decoder.dequeueOutputBuffer(info, 10000);
+            dequeueOutputBufferTime += (System.currentTimeMillis() - dequeueOutputBufferStart);
+            dequeueOutputBufferCount += 1;
+
+            if (outputBufferId >= 0) {
+                noDecodeOutputBufferCnt = 0;
+                if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                    sawOutputEOS = true;
+                }
+                if(frame_index >= needCheckFrameCount || info.presentationTimeUs > lastTimeUs){
+                    decoder.releaseOutputBuffer(outputBufferId, true);
+                    sawOutputEOS = true;
+                } else {
+                    if(counter % jump == 0) {
+                        long imageStart = System.currentTimeMillis();
+                        Image image = decoder.getOutputImage(outputBufferId);
+                        byte[] bytes = getDataFromImage(image, COLOR_FormatNV21);
+                        getOutputImageTime += (System.currentTimeMillis() - imageStart);
+                        getOutputImageCount += 1;
+
+                        long startinfertime = System.currentTimeMillis();
+                        int[] index = sceneClsInferenceYUV(bytes, width, height);
+                        long endinfertime = System.currentTimeMillis();
+                        infertime += (endinfertime - startinfertime);
+                        scoreTmp.add(index[index.length-1]);
+                        sceneIndexTemp.add(index[index.length-2]);
+                        image.close();
+
+                        ++frame_index;
+                    }
+                    ++counter;
+
+                    decoder.releaseOutputBuffer(outputBufferId, true);
+                }
+            }else{
+                noDecodeOutputBufferCnt++;
+                if(noDecodeOutputBufferCnt > maxLossCnt){
+                    sawOutputEOS = true;
+                }
+            }
+        }
+
+        long testclstimeend = System.currentTimeMillis() - testclstime;
+        Log.e("TimeAna","cls Coast Time:"+ testclstimeend + "infer time:" + infertime );
+        Log.e("TimeAna","dequeueInputBufferTime:"+ dequeueInputBufferTime + "call count : " + dequeueInputBufferCount);
+        Log.e("TimeAna","queueInputBufferTime:"+ queueInputBufferTime + "call count : " + queueInputBufferCount);
+        Log.e("TimeAna","dequeueOutputBufferTime:"+ dequeueOutputBufferTime + "call count : " + dequeueOutputBufferCount);
+        Log.e("TimeAna","getOutputImageTime:"+ getOutputImageTime + "call count : " + getOutputImageCount + " all" + calltime);
+
+
+        long endTime = System.currentTimeMillis();
+        int costTime = (int)(endTime - startTime);
+        int averageTime = costTime / frameCount;
+
+        Vector res_str = new Vector();
+        res_str.add(String.valueOf(costTime));
+        res_str.add(String.valueOf(averageTime));
+        res_str.add(String.valueOf(frameCount));
+
+        long allClsTime = System.currentTimeMillis() - startTime;
+        Log.e("TimeAna","A Time:"+ costTime+"ms"+ " framecount:" + frameCount + " avg time:" + averageTime + "ms");
+        Log.e("TimeAna","All Time:"+ allClsTime+"ms");
+
+        for(int i = 0; i < sceneIndexTemp.size(); ++i) {
+            //res_str.add(resultLabel.get(scene_index[i]) + "(" + result[i] + "-" + result[i+1] + ")");
+            res_str.add("\"shot" + i +
+                    "\":{\"confi\":" + String.format("%.2f", (int)(scoreTmp.get(i)) / 100.0f) +
+                    ",\"scene\":\"" + resultLabel.get((int)(sceneIndexTemp.get(i))) + "\"}");
+        }
+
+        return res_str;
+    }
+
+
 
     private Vector inferenceVideoInternal_efficient(String videoPath, long cutStartMs, long cutEndMs, boolean useKeyFrame) {
         Vector vec = new Vector();

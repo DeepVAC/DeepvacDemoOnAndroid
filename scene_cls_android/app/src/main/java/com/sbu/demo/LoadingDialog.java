@@ -4,7 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.widget.TextView;
 
-import com.sbu.scenecls.R;
+import com.sbu.demo.R;
 
 
 public class LoadingDialog extends Dialog {

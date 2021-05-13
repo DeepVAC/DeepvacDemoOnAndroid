@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
             if(cutEnd > duration){
                 cutEnd = -1;
             }
-            final int result[] = shotSegmention.getSbdIndex(videoPath, 1500, cutEnd);
+            final int result[] = shotSegmention.getSbdIndex(videoPath, 0, cutEnd);
             long endTime = System.currentTimeMillis();
 
             String text = String.valueOf(result[0]);

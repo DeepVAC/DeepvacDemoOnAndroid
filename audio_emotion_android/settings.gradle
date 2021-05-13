@@ -1,0 +1,2 @@
+include ':app', ':lib', ':audio_cls'
+rootProject.name='audio_emotion_android'

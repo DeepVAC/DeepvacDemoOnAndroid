@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import com.sbu.scenecls.R;
+import com.sbu.demo.R;
 import com.scls.library.SceneRecognition;
 
 
