@@ -1,0 +1,2 @@
+include ':app', ':scls_lib'
+rootProject.name='scene_cls'
