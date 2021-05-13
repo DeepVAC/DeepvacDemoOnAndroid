@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.4.1)
 
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ../../../../../../ncnn-mobile/zoo/audio_emotion/include
+        /../../../../../third_party/ncnn-mobile/zoo/audio_emotion/include
         )
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
@@ -36,10 +36,10 @@ else()
         message("OPENMP NOT FOUND")
 endif()
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/../../../../../../ncnn-mobile/zoo/audio_emotion ae_build)
+add_subdirectory(${CMAKE_SOURCE_DIR}/../../../../../third_party/ncnn-mobile/zoo/audio_emotion ae_build)
 add_library(lib_ncnn STATIC IMPORTED)
 set_target_properties(lib_ncnn PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/../../../../../../ncnn-mobile/libs/${ANDROID_ABI}/libncnn.a)
+        ${CMAKE_SOURCE_DIR}/../../../../../third_party/ncnn-mobile/libs/${ANDROID_ABI}/libncnn.a)
 
 add_library(lib_essentia STATIC IMPORTED)
 set_target_properties(lib_essentia PROPERTIES IMPORTED_LOCATION

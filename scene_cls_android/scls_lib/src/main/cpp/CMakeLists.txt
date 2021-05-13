@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.4.1)
 
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ../../../../../../ncnn-mobile/zoo/scene_classify/include
+        /../../../../../third_party/ncnn-mobile/zoo/scene_classify/include
         )
 
 SET(CMAKE_BUILD_TYPE "RELEASE")
@@ -25,10 +25,10 @@ if(OPENMP_FOUND)
 endif()
 
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/../../../../../../ncnn-mobile/zoo/scene_classify cls_build)
+add_subdirectory(${CMAKE_SOURCE_DIR}/../../../../../third_party/ncnn-mobile/zoo/scene_classify cls_build)
 add_library(lib_ncnn STATIC IMPORTED)
 set_target_properties(lib_ncnn PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/../../../../../../ncnn-mobile/libs/${ANDROID_ABI}/libncnn.a)
+        ${CMAKE_SOURCE_DIR}/../../../../../third_party/ncnn-mobile/libs/${ANDROID_ABI}/libncnn.a)
 
 add_library(lib_yuv STATIC IMPORTED)
 set_target_properties(lib_yuv PROPERTIES IMPORTED_LOCATION
