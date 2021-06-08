@@ -275,8 +275,8 @@ public class BodySegmentFragment extends BaseFragment {
                 mBodyDetector.setOFD(b);
             }
         });
-        mOFDTextView.setVisibility(View.INVISIBLE);
-        mOFDSwitch.setVisibility(View.INVISIBLE);
+//        mOFDTextView.setVisibility(View.INVISIBLE);
+//        mOFDSwitch.setVisibility(View.INVISIBLE);
 
         //modify
         TextView gpuTextView = $(R.id.gpu_text);
