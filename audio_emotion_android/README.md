@@ -5,7 +5,7 @@ android版本音频情绪识别demo(包含aar的生成)</br>
 
 Version 20.0.5594570
 
-### 下载ncnn和yuv库
+### 下载essentia库
 
 1. https://github.com/DeepVAC/DeepvacDemoOnAndroid/releases</br>
 

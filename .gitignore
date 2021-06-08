@@ -8,6 +8,9 @@
 *.jks
 *.bin
 *.param
+*.tnnmodel
+*.tnnproto
+*.bk
 *.DS_Store
 
 

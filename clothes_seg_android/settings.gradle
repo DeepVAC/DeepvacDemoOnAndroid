@@ -1,0 +1,2 @@
+include ':AccessorySegment'
+rootProject.name = "clothes_seg_android"
