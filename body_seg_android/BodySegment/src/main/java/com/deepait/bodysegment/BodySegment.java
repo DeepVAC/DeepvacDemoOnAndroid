@@ -8,4 +8,6 @@ public class BodySegment {
 
     public static native void YUVtoARBG(byte yuv420sp[], int width, int height, int argbOut[]);
     public native int setOFD(boolean ofd);
+    public native int setConf(boolean conf);
+
 }

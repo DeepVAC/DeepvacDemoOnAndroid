@@ -318,6 +318,17 @@ JNIEXPORT JNICALL jint TNN_BODY_SEGMENT(setOFD)(JNIEnv *env, jobject thiz, jbool
     return 0;
 }
 
+JNIEXPORT JNICALL jint TNN_BODY_SEGMENT(setConf)(JNIEnv *env, jobject thiz, jboolean ofd) {
+    auto asyncRefBodyDector = bodyDetector;
+    if(ofd == true) {
+        asyncRefBodyDector->setThreshold(0.9);
+    } else {
+        asyncRefBodyDector->setThreshold(0.5);
+    }
+    return 0;
+}
+
+
 
 JNIEXPORT JNICALL jboolean TNN_BODY_SEGMENT(predictFromStream)(JNIEnv *env, jobject thiz, jbyteArray yuv420sp, jint width, jint height, jint rotate,
                                                               jboolean detectBody, jboolean detectHead, jintArray outputData) {

@@ -73,6 +73,9 @@ public class AccessorySegmentFragment extends BaseFragment {
     private boolean mUseHuaweiNpu = false;
     private TextView HuaweiNpuTextView;
 
+    private ToggleButton mOFDSwitch;
+    private TextView mOFDTextView;
+
     private boolean mDeviceSwiched = false;
 
     boolean isAsyncImage = true;
@@ -125,18 +128,16 @@ public class AccessorySegmentFragment extends BaseFragment {
 
         //copy detect model to sdcard
         String[] modelPathsDetector = {
-//                "espnetv2_2.0_384x384.opt.tnnmodel",
-//                "espnetv2_2.0_384x384.opt.tnnproto"
-                "Clothes_Seg.opt.tnnmodel",
-                "Clothes_Seg.opt.tnnproto"
-//                "model.quantized.tnnmodel",
-//                "model.quantized.tnnproto"
+//                "Clothes_Seg.opt.tnnmodel",
+//                "Clothes_Seg.opt.tnnproto"
+            "trained_soc.opt.tnnmodel",
+            "trained.opt.tnnproto",
         };
 
         // 以下值固定不要修改
         String[] modelNames = {
-                "clothes.tnnmodel",
-                "clothes.tnnproto"
+            "clothes.tnnmodel",
+            "clothes.tnnproto"
         };
 
 
@@ -232,7 +233,19 @@ public class AccessorySegmentFragment extends BaseFragment {
             mHuaweiNPUswitch.setVisibility(View.INVISIBLE);
         }
 
+        mOFDTextView = $(R.id.ofd_text);
+        mOFDSwitch = $(R.id.ofd_switch);
+        mOFDSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mBodyDetector.setOFD(b);
+            }
+        });
+
         // modify ----------------
+        mOFDTextView.setVisibility(View.INVISIBLE);
+        mOFDSwitch.setVisibility(View.INVISIBLE);
+
         TextView gpuTextView = $(R.id.gpu_text);
         gpuTextView.setVisibility(View.INVISIBLE);
         mGPUSwitch.setVisibility(View.INVISIBLE);
