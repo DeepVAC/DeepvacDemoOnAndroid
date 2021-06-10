@@ -76,6 +76,8 @@ public class BodySegmentFragment extends BaseFragment {
     private ToggleButton mOFDSwitch;
     private TextView mOFDTextView;
 
+    private ToggleButton mConfSwitch;
+    private TextView mConfTextView;
 
     private boolean mDeviceSwiched = false;
 
@@ -133,19 +135,12 @@ public class BodySegmentFragment extends BaseFragment {
         //copy detect model to sdcard
         String[] modelPathsDetector = {
                 // body
-//                "person.tnnmodel",
-//                "person.tnnproto",
-                "ESP_CLS1_SOC.opt.tnnmodel",
-                "ESP_CLS1_SOC.opt.tnnproto",
-//                "model.quantized.tnnmodel",
-//                "model.quantized.tnnproto",
-//                "Portrait_Seg.opt.tnnmodel",
-//                "Portrait_Seg.opt.tnnproto",
-                // "ultra_fast_net_body_512_0201.opt.tnnmodel",
-                // "ultra_fast_net_body_512_0201.opt.tnnproto",
 
-                //"ultra_fast_net_body_256_0111.opt.tnnmodel",
-                //"ultra_fast_net_body_256_0111.opt.tnnproto",
+//                "ESP_CLS1_SOC.opt.tnnmodel",
+//                "ESP_CLS1_SOC.opt.tnnproto",
+                "trained.opt.tnnmodel",
+                "mtrained.opt.tnnproto",
+//
                 // face
                 "rfb_320.opt.tnnmodel",
                 "rfb_320.opt.tnnproto",
@@ -275,8 +270,20 @@ public class BodySegmentFragment extends BaseFragment {
                 mBodyDetector.setOFD(b);
             }
         });
+
+        mConfTextView = $(R.id.conf_text);
+        mConfSwitch = $(R.id.conf_switch);
+        mConfSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mBodyDetector.setConf(b);
+            }
+        });
+
 //        mOFDTextView.setVisibility(View.INVISIBLE);
 //        mOFDSwitch.setVisibility(View.INVISIBLE);
+//        mConfTextView.setVisibility(View.INVISIBLE);
+//        mConfSwitch.setVisibility(View.INVISIBLE);
 
         //modify
         TextView gpuTextView = $(R.id.gpu_text);

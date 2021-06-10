@@ -97,6 +97,13 @@ JNIEXPORT JNICALL jint TNN_BODY_SEGMENT(init)(JNIEnv *env, jobject thiz, jstring
     return 0;
 }
 
+JNIEXPORT JNICALL jint TNN_BODY_SEGMENT(setOFD)(JNIEnv *env, jobject thiz, jboolean ofd) {
+    auto asyncRefBodyDector = bodyDetector;
+    asyncRefBodyDector->setOFDStatus(ofd);
+    return 0;
+}
+
+
 JNIEXPORT JNICALL jboolean TNN_BODY_SEGMENT(checkNpu)(JNIEnv *env, jobject thiz, jstring modelPath) {
     return false;
     TNN_NS::AccessoryDetect humanDetector;
